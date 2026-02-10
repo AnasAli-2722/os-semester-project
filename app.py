@@ -6,7 +6,12 @@ from algorithms.cpu import CPUScheduler, Process
 from algorithms.memory import MemoryManager
 
 # --- Page Config ---
-st.set_page_config(page_title="OS Simulator", page_icon="💻", layout="wide")
+st.set_page_config(
+    page_title="OS Simulator",
+    page_icon="💻",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # --- Custom CSS: Professional Design System ---
 st.markdown("""
@@ -14,7 +19,18 @@ st.markdown("""
     /* ===== Google Font ===== */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html, body, [data-testid="stAppViewContainer"],
+    div, p, h1, h2, h3, h4, h5, h6, a, label, input, textarea, select, td, th, li {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    /* Buttons get Inter but NOT the sidebar collapse buttons (they use Material Icons) */
+    .stButton > button,
+    .stDownloadButton > button,
+    .stFormSubmitButton > button,
+    [data-testid="stBaseButton-secondary"],
+    [data-testid="stBaseButton-primary"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
 
     /* ===== Base Theme ===== */
     .stApp {
@@ -185,49 +201,22 @@ st.markdown("""
     }
 
     /* ===== SIDEBAR ===== */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d1220 0%, #111827 100%) !important;
-        border-right: 1px solid rgba(79, 172, 254, 0.06) !important;
-        min-width: 280px !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-        color: #94a3b8;
-    }
-    /* Keep sidebar content visible and properly contained */
-    [data-testid="stSidebar"] > div:first-child {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    /* Sidebar collapse button styling */
-    [data-testid="stSidebar"] button[kind="header"],
-    [data-testid="collapsedControl"] {
-        color: #4facfe !important;
-    }
-    [data-testid="collapsedControl"] {
-        background: rgba(13, 18, 32, 0.95) !important;
-        border: 1px solid rgba(79, 172, 254, 0.15) !important;
-        border-radius: 0 12px 12px 0 !important;
-        color: #4facfe !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-    }
-    [data-testid="collapsedControl"]:hover {
-        background: rgba(79, 172, 254, 0.1) !important;
-        border-color: rgba(79, 172, 254, 0.3) !important;
-    }
-    [data-testid="collapsedControl"] svg {
-        fill: #4facfe !important;
-        color: #4facfe !important;
+    /* Background gradient — visual only, no layout overrides */
+    section[data-testid="stSidebar"] > div {
+        background: linear-gradient(180deg, #0d1220 0%, #111827 100%);
+        border-right: 1px solid rgba(79, 172, 254, 0.06);
     }
 
-    /* Sidebar radio buttons */
-    [data-testid="stSidebar"] .stRadio > div {
+    /* Text color inside sidebar */
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+        color: #94a3b8;
+    }
+
+    /* Radio navigation buttons */
+    section[data-testid="stSidebar"] .stRadio > div {
         gap: 4px !important;
     }
-    [data-testid="stSidebar"] .stRadio > div > label {
+    section[data-testid="stSidebar"] .stRadio > div > label {
         background: rgba(79, 172, 254, 0.04) !important;
         border: 1px solid rgba(79, 172, 254, 0.08) !important;
         border-radius: 12px !important;
@@ -236,22 +225,21 @@ st.markdown("""
         transition: all 0.25s ease !important;
         cursor: pointer !important;
     }
-    [data-testid="stSidebar"] .stRadio > div > label:hover {
+    section[data-testid="stSidebar"] .stRadio > div > label:hover {
         background: rgba(79, 172, 254, 0.1) !important;
         border-color: rgba(79, 172, 254, 0.2) !important;
     }
-    [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"],
-    [data-testid="stSidebar"] .stRadio > div > label:has(input:checked) {
+    section[data-testid="stSidebar"] .stRadio > div > label:has(input:checked) {
         background: linear-gradient(135deg, rgba(79, 172, 254, 0.12), rgba(0, 242, 254, 0.08)) !important;
         border-color: rgba(79, 172, 254, 0.3) !important;
         box-shadow: 0 0 20px rgba(79, 172, 254, 0.08) !important;
     }
-    [data-testid="stSidebar"] .stRadio > div > label p {
+    section[data-testid="stSidebar"] .stRadio > div > label p {
         font-weight: 500 !important;
         font-size: 0.9rem !important;
     }
 
-    /* Sidebar branding */
+    /* Sidebar branding classes */
     .sidebar-logo {
         text-align: center;
         padding: 20px 16px 16px 16px;
@@ -289,17 +277,11 @@ st.markdown("""
         border: none;
     }
 
-    /* Sidebar spacer — pushes footer to bottom */
-    .sidebar-spacer {
-        flex-grow: 1;
-        min-height: 40px;
-    }
-
-    /* Sidebar footer — in-flow, not fixed */
+    /* Sidebar footer */
     .sidebar-footer {
         text-align: center;
         padding: 20px 16px;
-        margin-top: auto;
+        margin-top: 40px;
         border-top: 1px solid rgba(79, 172, 254, 0.06);
         background: rgba(11, 15, 25, 0.5);
     }
@@ -502,29 +484,23 @@ st.markdown("""
     }
 
     /* ===== HIDE STREAMLIT DEFAULTS ===== */
+    /* Hide menu, deploy, status — but NOT the toolbar itself (sidebar button lives there) */
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
-    header[data-testid="stHeader"] {
+    .stAppDeployButton { display: none; }
+    [data-testid="stStatusWidget"] { visibility: hidden; }
+    [data-testid="stToolbarActions"] { visibility: hidden; }
+
+    /* Header: transparent bg, fully functional (sidebar buttons are inside it) */
+    [data-testid="stHeader"] {
         background: transparent !important;
-        backdrop-filter: none !important;
-    }
-    /* Hide only the Streamlit decoration / toolbar, keep sidebar controls */
-    header[data-testid="stHeader"] .stAppDeployButton,
-    header[data-testid="stHeader"] [data-testid="stStatusWidget"],
-    header[data-testid="stHeader"] [data-testid="stToolbar"] {
-        visibility: hidden !important;
     }
 
-    /* Ensure sidebar is always rendered */
-    [data-testid="stSidebar"] {
-        display: flex !important;
-        z-index: 999 !important;
+    /* Ensure Material Icons render correctly (sidebar expand/collapse arrows) */
+    [data-testid="stIconMaterial"] {
+        font-family: "Material Symbols Rounded" !important;
     }
-    [data-testid="collapsedControl"] {
-        display: block !important;
-        visibility: visible !important;
-        z-index: 1000 !important;
-    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -546,7 +522,7 @@ st.markdown("---")
 
 # --- Sidebar ---
 with st.sidebar:
-    # Logo / Branding
+    # Branding
     st.markdown('''
     <div class="sidebar-logo">
         <span class="sidebar-logo-icon">💻</span>
@@ -566,7 +542,7 @@ with st.sidebar:
 
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
 
-    # Context-aware info card
+    # Context-aware info
     if "CPU" in module:
         st.markdown('''
         <div class="card" style="padding: 16px 18px;">
@@ -588,9 +564,6 @@ with st.sidebar:
             </div>
         </div>
         ''', unsafe_allow_html=True)
-
-    # Spacer to push footer down
-    st.markdown('<div class="sidebar-spacer"></div>', unsafe_allow_html=True)
 
     # Footer
     st.markdown('''
