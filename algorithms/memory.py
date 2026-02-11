@@ -2,7 +2,7 @@ class MemoryManager:
     def fifo(self, pages, frames_count):
         frames = []
         page_faults = 0
-        snapshots = [] # To visualize memory state at each step
+        snapshots = [] 
 
         for page in pages:
             status = "Hit"
@@ -12,12 +12,12 @@ class MemoryManager:
                 if len(frames) < frames_count:
                     frames.append(page)
                 else:
-                    frames.pop(0) # Remove first in
+                    frames.pop(0) 
                     frames.append(page)
             
             snapshots.append({
                 "Page": page,
-                "Frames": list(frames), # Copy list
+                "Frames": list(frames), 
                 "Status": status
             })
             
@@ -36,10 +36,9 @@ class MemoryManager:
                 if len(frames) < frames_count:
                     frames.append(page)
                 else:
-                    frames.pop(0) # Remove Least Recently Used (index 0)
+                    frames.pop(0) 
                     frames.append(page)
             else:
-                # If hit, move it to the end (most recently used)
                 frames.remove(page)
                 frames.append(page)
                 

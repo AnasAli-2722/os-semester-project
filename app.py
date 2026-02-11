@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 from algorithms.cpu import CPUScheduler, Process
 from algorithms.memory import MemoryManager
 
-# --- Page Config ---
 st.set_page_config(
     page_title="OS Simulator",
     page_icon="💻",
@@ -13,7 +12,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Custom CSS: Professional Design System ---
 st.markdown("""
 <style>
     /* ===== Google Font ===== */
@@ -505,7 +503,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# --- Helper ---
 def metric_card(label, value):
     st.markdown(f'''
     <div class="metric-card">
@@ -515,14 +512,11 @@ def metric_card(label, value):
     ''', unsafe_allow_html=True)
 
 
-# --- Header ---
 st.markdown('<div class="main-header">💻 Operating System Simulator</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Semester Project &nbsp;•&nbsp; BSCS &nbsp;•&nbsp; UET Taxila</div>', unsafe_allow_html=True)
 st.markdown("---")
 
-# --- Sidebar ---
 with st.sidebar:
-    # Branding
     st.markdown('''
     <div class="sidebar-logo">
         <span class="sidebar-logo-icon">💻</span>
@@ -532,7 +526,6 @@ with st.sidebar:
     <div class="sidebar-divider"></div>
     ''', unsafe_allow_html=True)
 
-    # Navigation
     st.markdown('<div class="sidebar-nav-label">📌 Modules</div>', unsafe_allow_html=True)
     module = st.radio(
         "Navigation",
@@ -542,7 +535,6 @@ with st.sidebar:
 
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
 
-    # Context-aware info
     if "CPU" in module:
         st.markdown('''
         <div class="card" style="padding: 16px 18px;">
@@ -565,27 +557,23 @@ with st.sidebar:
         </div>
         ''', unsafe_allow_html=True)
 
-    # Footer
     st.markdown('''
     <div class="sidebar-footer">
-        <div class="sidebar-footer-text">Made with ❤️ by</div>
+        <div class="sidebar-footer-text">Made by</div>
         <div class="sidebar-footer-names">
             Mahnoor <span class="sidebar-footer-dot"></span> Anas
         </div>
     </div>
     ''', unsafe_allow_html=True)
 
-# Clean module name
 module_clean = module.strip()
 
-# ================= CPU MODULE =================
 if "CPU" in module_clean:
     st.markdown('<div class="sub-header">⚙️ CPU Scheduling Simulator</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2], gap="large")
 
     with col1:
-        # Configuration Card
         st.markdown('''<div class="card">
             <div class="card-title">🔧 Configuration</div>
             <div class="card-body">Choose algorithm and set parameters</div>
@@ -601,7 +589,6 @@ if "CPU" in module_clean:
 
         st.markdown("---")
 
-        # Process Input Card
         st.markdown('''<div class="card">
             <div class="card-title">➕ Add Processes</div>
             <div class="card-body">Add manually or upload a CSV file</div>
@@ -610,11 +597,9 @@ if "CPU" in module_clean:
         uploaded_file = st.file_uploader("Upload CSV (pid, arrival, burst)", type="csv",
                                          help="CSV must have columns: pid, arrival, burst")
 
-        # Session state init
         if 'processes' not in st.session_state:
             st.session_state.processes = []
 
-        # CSV upload handler
         if uploaded_file is not None:
             try:
                 df_csv = pd.read_csv(uploaded_file)
@@ -647,7 +632,6 @@ if "CPU" in module_clean:
             st.rerun()
 
     with col2:
-        # Process Queue Card
         st.markdown('''<div class="card">
             <div class="card-title">📋 Process Queue</div>
             <div class="card-body">Processes ready for scheduling</div>
@@ -658,11 +642,9 @@ if "CPU" in module_clean:
             df_input.columns = ["PID", "Arrival Time", "Burst Time"]
             st.dataframe(df_input, width='stretch', hide_index=True)
 
-            # Process chips
             chips_html = " ".join([f'<span class="process-chip">P{p["pid"]}</span>' for p in st.session_state.processes])
             st.markdown(f'<div style="margin: 8px 0 16px 0;">{chips_html}</div>', unsafe_allow_html=True)
 
-            # Centered Run button
             btn_col1, btn_col2, btn_col3 = st.columns([1, 2, 1])
             with btn_col2:
                 run_clicked = st.button("🚀  Run Simulation", type="primary")
@@ -679,7 +661,6 @@ if "CPU" in module_clean:
                     else:
                         result_procs, timeline = scheduler.round_robin(process_objects, quantum)
 
-                # ---- Gantt Chart ----
                 st.markdown("---")
                 st.markdown('''<div class="card">
                     <div class="card-title">📊 Gantt Chart</div>
@@ -732,7 +713,6 @@ if "CPU" in module_clean:
                     )
                     st.plotly_chart(fig, width='stretch')
 
-                # ---- Performance Metrics ----
                 st.markdown('''<div class="card">
                     <div class="card-title">📈 Performance Metrics</div>
                     <div class="card-body">Detailed scheduling results per process</div>

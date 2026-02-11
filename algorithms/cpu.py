@@ -16,7 +16,7 @@ class CPUScheduler:
     def fcfs(self, processes):
         processes.sort(key=lambda x: x.arrival_time)
         current_time = 0
-        timeline = [] # For Gantt Chart
+        timeline = [] 
 
         for p in processes:
             if current_time < p.arrival_time:
@@ -33,7 +33,6 @@ class CPUScheduler:
         return processes, timeline
 
     def sjf_non_preemptive(self, processes):
-        # Sort initially by arrival
         processes.sort(key=lambda x: x.arrival_time)
         completed = []
         timeline = []
@@ -41,16 +40,13 @@ class CPUScheduler:
         remaining = processes[:]
         
         while remaining:
-            # Filter processes that have arrived
             available = [p for p in remaining if p.arrival_time <= current_time]
             
             if not available:
-                # Pick the earliest arriving process from ALL remaining
                 earliest = min(remaining, key=lambda x: x.arrival_time)
                 current_time = earliest.arrival_time
                 continue
             
-            # Select process with shortest burst time
             shortest = min(available, key=lambda x: x.burst_time)
             
             shortest.start_time = current_time
@@ -73,20 +69,14 @@ class CPUScheduler:
         current_time = 0
         completed = []
         
-        # Helper to find process by ID in original list to update stats
-        # We work with a copy or modify directly carefully. 
-        # For simplicity in simulation, we clone process states.
         
-        # Initial Load
         active_pool = [p for p in processes] 
-        # Start with the first process
         if active_pool:
              queue.append(active_pool.pop(0))
              current_time = queue[0].arrival_time
 
         while queue or active_pool:
             if not queue:
-                # Jump to next arrival if queue is empty
                 next_p = active_pool.pop(0)
                 current_time = next_p.arrival_time
                 queue.append(next_p)
@@ -102,7 +92,6 @@ class CPUScheduler:
             p.remaining_time -= exec_time
             current_time += exec_time
             
-            # Check for new arrivals during this time slice
             while active_pool and active_pool[0].arrival_time <= current_time:
                 queue.append(active_pool.pop(0))
                 
